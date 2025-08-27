@@ -1,0 +1,1442 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kutubxona Boshqaruv Tizimi</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .login-header {
+            margin-bottom: 30px;
+        }
+
+        .login-header h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .login-header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e1e1;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            margin-bottom: 20px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .demo-users {
+            background: #f0f4ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .demo-users h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .demo-user {
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            border-left: 4px solid #667eea;
+        }
+
+        .demo-user:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Dashboard Styles */
+        .dashboard {
+            display: none;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar h1 {
+            color: #333;
+            font-size: 24px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .logout-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .logout-btn:hover {
+            background: #c0392b;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 80px;
+            width: 250px;
+            height: calc(100vh - 80px);
+            background: white;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px 0;
+            z-index: 1000;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-menu a {
+            display: block;
+            padding: 15px 25px;
+            color: #666;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background: #f0f4ff;
+            color: #667eea;
+            border-left-color: #667eea;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 20px 30px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: transform 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-info h3 {
+            font-size: 32px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .stat-info p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+
+        .stat-books { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .stat-users { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .stat-issued { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .stat-overdue { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+
+        .content-section {
+            display: none;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .section-header {
+            padding: 25px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-header h2 {
+            font-size: 24px;
+        }
+
+        .search-filter {
+            padding: 25px 30px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .search-input, .filter-select {
+            padding: 10px 15px;
+            border: 2px solid #e1e1e1;
+            border-radius: 8px;
+            font-size: 14px;
+            min-width: 200px;
+        }
+
+        .search-input:focus, .filter-select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: left;
+            color: #333;
+            font-weight: 600;
+            border-bottom: 2px solid #e1e1e1;
+        }
+
+        .data-table td {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            color: #666;
+        }
+
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-available { background: #d4edda; color: #155724; }
+        .status-issued { background: #cce5ff; color: #004085; }
+        .status-overdue { background: #f8d7da; color: #721c24; }
+        .status-active { background: #d1ecf1; color: #0c5460; }
+
+        .action-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-right: 5px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary { background: #667eea; color: white; }
+        .btn-success { background: #28a745; color: white; }
+        .btn-warning { background: #ffc107; color: #333; }
+        .btn-danger { background: #dc3545; color: white; }
+
+        .action-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .chart-container {
+            padding: 30px;
+            height: 400px;
+        }
+
+        .add-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .add-btn:hover {
+            background: #218838;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 20px 15px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .search-filter {
+                flex-direction: column;
+            }
+            
+            .search-input, .filter-select {
+                min-width: auto;
+            }
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 2px solid #667eea;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background: #28a745;
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 3000;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <h1>📚 Kutubxona</h1>
+                <p>Boshqaruv Tizimiga Kirish</p>
+            </div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Foydalanuvchi nomi</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Parol</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                
+                <button type="submit" class="login-btn">
+                    <span id="loginText">Kirish</span>
+                    <span id="loginLoader" class="loading" style="display: none;"></span>
+                </button>
+            </form>
+
+            <div class="demo-users">
+                <h3>Demo Foydalanuvchilar:</h3>
+                <div class="demo-user">
+                    <strong>Admin:</strong> admin / admin123
+                </div>
+                <div class="demo-user">
+                    <strong>Talaba:</strong> student / student123
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboard" class="dashboard">
+        <!-- Navigation Bar -->
+        <nav class="navbar">
+            <h1>📚 Kutubxona Boshqaruv Tizimi</h1>
+            <div class="user-info">
+                <span id="currentUser">Admin</span>
+                <div class="user-avatar" id="userAvatar">A</div>
+                <button class="logout-btn" onclick="logout()">Chiqish</button>
+            </div>
+        </nav>
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <ul class="sidebar-menu">
+                <li><a href="#dashboard" class="active" onclick="showSection('dashboard')">📊 Bosh sahifa</a></li>
+                <li><a href="#books" onclick="showSection('books')">📖 Kitoblar</a></li>
+                <li><a href="#users" onclick="showSection('users')">👥 Foydalanuvchilar</a></li>
+                <li><a href="#transactions" onclick="showSection('transactions')">📋 Operatsiyalar</a></li>
+                <li><a href="#reports" onclick="showSection('reports')">📈 Hisobotlar</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Section -->
+            <div id="dashboard-section" class="content-section active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <h3 id="totalBooks">1,247</h3>
+                            <p>Jami Kitoblar</p>
+                        </div>
+                        <div class="stat-icon stat-books">📚</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <h3 id="totalUsers">328</h3>
+                            <p>Foydalanuvchilar</p>
+                        </div>
+                        <div class="stat-icon stat-users">👥</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <h3 id="issuedBooks">89</h3>
+                            <p>Berilgan Kitoblar</p>
+                        </div>
+                        <div class="stat-icon stat-issued">📤</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <h3 id="overdueBooks">12</h3>
+                            <p>Qaytmagan Kitoblar</p>
+                        </div>
+                        <div class="stat-icon stat-overdue">⚠️</div>
+                    </div>
+                </div>
+
+                <!-- Recent Activities -->
+                <div class="content-section active" style="display: block;">
+                    <div class="section-header">
+                        <h2>So'nggi Faoliyat</h2>
+                    </div>
+                    <div style="padding: 20px;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Vaqt</th>
+                                    <th>Foydalanuvchi</th>
+                                    <th>Kitob</th>
+                                    <th>Amal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>2024-08-28 14:30</td>
+                                    <td>Alisher Karimov</td>
+                                    <td>O'zbek tili adabiyoti</td>
+                                    <td><span class="status-badge status-issued">Berildi</span></td>
+                                </tr>
+                                <tr>
+                                    <td>2024-08-28 13:15</td>
+                                    <td>Malika Tosheva</td>
+                                    <td>Dasturlash asoslari</td>
+                                    <td><span class="status-badge status-available">Qaytarildi</span></td>
+                                </tr>
+                                <tr>
+                                    <td>2024-08-28 11:45</td>
+                                    <td>Bobur Rahimov</td>
+                                    <td>Matematika</td>
+                                    <td><span class="status-badge status-issued">Berildi</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Books Section -->
+            <div id="books-section" class="content-section">
+                <div class="section-header">
+                    <h2>Kitoblar Boshqaruvi</h2>
+                    <button class="add-btn" onclick="openAddBookModal()">+ Kitob Qo'shish</button>
+                </div>
+                
+                <div class="search-filter">
+                    <input type="text" class="search-input" placeholder="Kitob qidirish..." id="bookSearch">
+                    <select class="filter-select" id="genreFilter">
+                        <option value="">Barcha janrlar</option>
+                        <option value="adabiyot">Adabiyot</option>
+                        <option value="ilm">Ilm-fan</option>
+                        <option value="texnika">Texnika</option>
+                        <option value="tarix">Tarix</option>
+                    </select>
+                    <select class="filter-select" id="statusFilter">
+                        <option value="">Barcha holatlar</option>
+                        <option value="available">Mavjud</option>
+                        <option value="issued">Berilgan</option>
+                        <option value="overdue">Qaytmagan</option>
+                    </select>
+                </div>
+
+                <div style="padding: 0 30px 30px;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nomi</th>
+                                <th>Muallif</th>
+                                <th>Janr</th>
+                                <th>Yil</th>
+                                <th>Holat</th>
+                                <th>Amallar</th>
+                            </tr>
+                        </thead>
+                        <tbody id="booksTableBody">
+                            <!-- Dynamic content -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Users Section -->
+            <div id="users-section" class="content-section">
+                <div class="section-header">
+                    <h2>Foydalanuvchilar</h2>
+                    <button class="add-btn" onclick="openAddUserModal()">+ Foydalanuvchi Qo'shish</button>
+                </div>
+                
+                <div class="search-filter">
+                    <input type="text" class="search-input" placeholder="Foydalanuvchi qidirish..." id="userSearch">
+                    <select class="filter-select" id="userTypeFilter">
+                        <option value="">Barcha turlar</option>
+                        <option value="student">Talaba</option>
+                        <option value="teacher">O'qituvchi</option>
+                        <option value="staff">Xodim</option>
+                    </select>
+                </div>
+
+                <div style="padding: 0 30px 30px;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Ism</th>
+                                <th>Elektron pochta</th>
+                                <th>Tur</th>
+                                <th>O'qilgan kitoblar</th>
+                                <th>Holat</th>
+                                <th>Amallar</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <!-- Dynamic content -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Transactions Section -->
+            <div id="transactions-section" class="content-section">
+                <div class="section-header">
+                    <h2>Kitob Berish / Qaytarish</h2>
+                    <button class="add-btn" onclick="openTransactionModal()">+ Yangi Operatsiya</button>
+                </div>
+
+                <div class="search-filter">
+                    <input type="text" class="search-input" placeholder="Qidirish..." id="transactionSearch">
+                    <select class="filter-select" id="transactionTypeFilter">
+                        <option value="">Barcha operatsiyalar</option>
+                        <option value="issued">Berilgan</option>
+                        <option value="returned">Qaytarilgan</option>
+                        <option value="overdue">Qaytmagan</option>
+                    </select>
+                </div>
+
+                <div style="padding: 0 30px 30px;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Foydalanuvchi</th>
+                                <th>Kitob</th>
+                                <th>Berilgan sana</th>
+                                <th>Qaytarish muddati</th>
+                                <th>Holat</th>
+                                <th>Amallar</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionsTableBody">
+                            <!-- Dynamic content -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Reports Section -->
+            <div id="reports-section" class="content-section">
+                <div class="section-header">
+                    <h2>Statistik Hisobotlar</h2>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="popularBooksChart" width="400" height="200"></canvas>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="monthlyStatsChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Book Modal -->
+    <div id="addBookModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Yangi Kitob Qo'shish</h3>
+                <span class="close" onclick="closeModal('addBookModal')">&times;</span>
+            </div>
+            <form id="addBookForm">
+                <div class="form-group">
+                    <label for="bookTitle">Kitob nomi</label>
+                    <input type="text" id="bookTitle" name="bookTitle" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="bookAuthor">Muallif</label>
+                        <input type="text" id="bookAuthor" name="bookAuthor" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="bookYear">Yil</label>
+                        <input type="number" id="bookYear" name="bookYear" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="bookGenre">Janr</label>
+                    <select id="bookGenre" name="bookGenre" required>
+                        <option value="">Janrni tanlang</option>
+                        <option value="adabiyot">Adabiyot</option>
+                        <option value="ilm">Ilm-fan</option>
+                        <option value="texnika">Texnika</option>
+                        <option value="tarix">Tarix</option>
+                    </select>
+                </div>
+                <button type="submit" class="login-btn">Qo'shish</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add User Modal -->
+    <div id="addUserModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Yangi Foydalanuvchi</h3>
+                <span class="close" onclick="closeModal('addUserModal')">&times;</span>
+            </div>
+            <form id="addUserForm">
+                <div class="form-group">
+                    <label for="userName">To'liq ism</label>
+                    <input type="text" id="userName" name="userName" required>
+                </div>
+                <div class="form-group">
+                    <label for="userEmail">Elektron pochta</label>
+                    <input type="email" id="userEmail" name="userEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="userType">Tur</label>
+                    <select id="userType" name="userType" required>
+                        <option value="">Turni tanlang</option>
+                        <option value="student">Talaba</option>
+                        <option value="teacher">O'qituvchi</option>
+                        <option value="staff">Xodim</option>
+                    </select>
+                </div>
+                <button type="submit" class="login-btn">Qo'shish</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Transaction Modal -->
+    <div id="transactionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Kitob Berish / Qaytarish</h3>
+                <span class="close" onclick="closeModal('transactionModal')">&times;</span>
+            </div>
+            <form id="transactionForm">
+                <div class="form-group">
+                    <label for="transactionUser">Foydalanuvchi</label>
+                    <select id="transactionUser" name="transactionUser" required>
+                        <option value="">Foydalanuvchini tanlang</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="transactionBook">Kitob</label>
+                    <select id="transactionBook" name="transactionBook" required>
+                        <option value="">Kitobni tanlang</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="transactionType">Amal turi</label>
+                    <select id="transactionType" name="transactionType" required>
+                        <option value="">Amalni tanlang</option>
+                        <option value="issue">Kitob berish</option>
+                        <option value="return">Kitob qaytarish</option>
+                    </select>
+                </div>
+                <button type="submit" class="login-btn">Bajarish</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification">
+        <span id="notificationText"></span>
+    </div>
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    
+    <script>
+        // Fake Data
+        let books = [
+            {id: 1, title: "O'zbek tili adabiyoti", author: "Abdulla Qodiriy", genre: "adabiyot", year: 2020, status: "available", issuedTo: null},
+            {id: 2, title: "Dasturlash asoslari", author: "John Smith", genre: "texnika", year: 2021, status: "issued", issuedTo: "Alisher Karimov"},
+            {id: 3, title: "Matematika", author: "Ahmad Nazarov", genre: "ilm", year: 2019, status: "available", issuedTo: null},
+            {id: 4, title: "O'zbekiston tarixi", author: "Shohida Mirziyoyeva", genre: "tarix", year: 2022, status: "overdue", issuedTo: "Malika Tosheva"},
+            {id: 5, title: "Fizika asoslari", author: "Einstein", genre: "ilm", year: 2020, status: "available", issuedTo: null},
+            {id: 6, title: "Kimyo darsligi", author: "Marie Curie", genre: "ilm", year: 2021, status: "issued", issuedTo: "Bobur Rahimov"},
+            {id: 7, title: "Ingliz tili", author: "Cambridge", genre: "adabiyot", year: 2023, status: "available", issuedTo: null},
+            {id: 8, title: "Python dasturlash", author: "Guido van Rossum", genre: "texnika", year: 2022, status: "issued", issuedTo: "Dilshod Umarov"}
+        ];
+
+        let users = [
+            {id: 1, name: "Alisher Karimov", email: "alisher@email.com", type: "student", booksRead: 15, status: "active"},
+            {id: 2, name: "Malika Tosheva", email: "malika@email.com", type: "teacher", booksRead: 32, status: "active"},
+            {id: 3, name: "Bobur Rahimov", email: "bobur@email.com", type: "student", booksRead: 8, status: "active"},
+            {id: 4, name: "Dilshod Umarov", email: "dilshod@email.com", type: "student", booksRead: 23, status: "active"},
+            {id: 5, name: "Nodira Qosimova", email: "nodira@email.com", type: "staff", booksRead: 45, status: "active"},
+            {id: 6, name: "Karim Abdullayev", email: "karim@email.com", type: "student", booksRead: 12, status: "active"},
+            {id: 7, name: "Sevara Tursunova", email: "sevara@email.com", type: "teacher", booksRead: 28, status: "active"}
+        ];
+
+        let transactions = [
+            {id: 1, userId: 1, bookId: 2, userName: "Alisher Karimov", bookTitle: "Dasturlash asoslari", issueDate: "2024-08-20", dueDate: "2024-09-20", status: "issued"},
+            {id: 2, userId: 2, bookId: 4, userName: "Malika Tosheva", bookTitle: "O'zbekiston tarixi", issueDate: "2024-07-15", dueDate: "2024-08-15", status: "overdue"},
+            {id: 3, userId: 3, bookId: 6, userName: "Bobur Rahimov", bookTitle: "Kimyo darsligi", issueDate: "2024-08-25", dueDate: "2024-09-25", status: "issued"},
+            {id: 4, userId: 4, bookId: 8, userName: "Dilshod Umarov", bookTitle: "Python dasturlash", issueDate: "2024-08-18", dueDate: "2024-09-18", status: "issued"},
+            {id: 5, userId: 5, bookId: 1, userName: "Nodira Qosimova", bookTitle: "O'zbek tili adabiyoti", issueDate: "2024-08-10", dueDate: "2024-09-10", status: "returned"}
+        ];
+
+        let currentUser = null;
+        let currentUserRole = null;
+
+        // Login functionality
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            // Show loading
+            document.getElementById('loginText').style.display = 'none';
+            document.getElementById('loginLoader').style.display = 'inline-block';
+            
+            // Simulate login delay
+            setTimeout(() => {
+                if ((username === 'admin' && password === 'admin123') || 
+                    (username === 'student' && password === 'student123')) {
+                    
+                    currentUser = username === 'admin' ? 'Admin' : 'Talaba';
+                    currentUserRole = username === 'admin' ? 'admin' : 'student';
+                    
+                    document.getElementById('currentUser').textContent = currentUser;
+                    document.getElementById('userAvatar').textContent = currentUser[0];
+                    
+                    document.getElementById('loginScreen').style.display = 'none';
+                    document.getElementById('dashboard').style.display = 'block';
+                    
+                    showNotification('Muvaffaqiyatli kirildingiz!');
+                    loadDashboardData();
+                } else {
+                    showNotification('Noto\'g\'ri login yoki parol!', 'error');
+                }
+                
+                // Hide loading
+                document.getElementById('loginText').style.display = 'inline';
+                document.getElementById('loginLoader').style.display = 'none';
+            }, 1500);
+        });
+
+        // Logout functionality
+        function logout() {
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('dashboard').style.display = 'none';
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            currentUser = null;
+            currentUserRole = null;
+        }
+
+        // Show section
+        function showSection(section) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
+            
+            // Show selected section
+            document.getElementById(section + '-section').classList.add('active');
+            document.querySelector(`[onclick="showSection('${section}')"]`).classList.add('active');
+            
+            // Load data for specific sections
+            switch(section) {
+                case 'books':
+                    loadBooksData();
+                    break;
+                case 'users':
+                    loadUsersData();
+                    break;
+                case 'transactions':
+                    loadTransactionsData();
+                    break;
+                case 'reports':
+                    loadReports();
+                    break;
+            }
+        }
+
+        // Load dashboard data
+        function loadDashboardData() {
+            const availableBooks = books.filter(b => b.status === 'available').length;
+            const issuedBooks = books.filter(b => b.status === 'issued').length;
+            const overdueBooks = books.filter(b => b.status === 'overdue').length;
+            
+            document.getElementById('totalBooks').textContent = books.length.toLocaleString();
+            document.getElementById('totalUsers').textContent = users.length.toLocaleString();
+            document.getElementById('issuedBooks').textContent = issuedBooks;
+            document.getElementById('overdueBooks').textContent = overdueBooks;
+        }
+
+        // Load books data
+        function loadBooksData() {
+            const tbody = document.getElementById('booksTableBody');
+            tbody.innerHTML = '';
+            
+            books.forEach(book => {
+                const statusClass = book.status === 'available' ? 'status-available' : 
+                                  book.status === 'issued' ? 'status-issued' : 'status-overdue';
+                const statusText = book.status === 'available' ? 'Mavjud' : 
+                                 book.status === 'issued' ? 'Berilgan' : 'Qaytmagan';
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${book.id}</td>
+                    <td><strong>${book.title}</strong></td>
+                    <td>${book.author}</td>
+                    <td>${book.genre.charAt(0).toUpperCase() + book.genre.slice(1)}</td>
+                    <td>${book.year}</td>
+                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                    <td>
+                        ${book.status === 'available' ? 
+                            '<button class="action-btn btn-primary" onclick="issueBook(' + book.id + ')">Berish</button>' :
+                            '<button class="action-btn btn-success" onclick="returnBook(' + book.id + ')">Qaytarish</button>'
+                        }
+                        <button class="action-btn btn-warning" onclick="editBook(' + book.id + ')">Tahrirlash</button>
+                        <button class="action-btn btn-danger" onclick="deleteBook(' + book.id + ')">O\'chirish</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Load users data
+        function loadUsersData() {
+            const tbody = document.getElementById('usersTableBody');
+            tbody.innerHTML = '';
+            
+            users.forEach(user => {
+                const typeText = user.type === 'student' ? 'Talaba' : 
+                               user.type === 'teacher' ? 'O\'qituvchi' : 'Xodim';
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${user.id}</td>
+                    <td><strong>${user.name}</strong></td>
+                    <td>${user.email}</td>
+                    <td>${typeText}</td>
+                    <td>${user.booksRead}</td>
+                    <td><span class="status-badge status-active">Faol</span></td>
+                    <td>
+                        <button class="action-btn btn-warning" onclick="editUser(${user.id})">Tahrirlash</button>
+                        <button class="action-btn btn-danger" onclick="deleteUser(${user.id})">O'chirish</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Load transactions data
+        function loadTransactionsData() {
+            const tbody = document.getElementById('transactionsTableBody');
+            tbody.innerHTML = '';
+            
+            transactions.forEach(transaction => {
+                const statusClass = transaction.status === 'issued' ? 'status-issued' : 
+                                  transaction.status === 'returned' ? 'status-available' : 'status-overdue';
+                const statusText = transaction.status === 'issued' ? 'Berilgan' : 
+                                 transaction.status === 'returned' ? 'Qaytarilgan' : 'Qaytmagan';
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${transaction.id}</td>
+                    <td>${transaction.userName}</td>
+                    <td>${transaction.bookTitle}</td>
+                    <td>${transaction.issueDate}</td>
+                    <td>${transaction.dueDate}</td>
+                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                    <td>
+                        ${transaction.status === 'issued' ? 
+                            '<button class="action-btn btn-success" onclick="returnTransaction(' + transaction.id + ')">Qaytarish</button>' : ''
+                        }
+                        <button class="action-btn btn-warning" onclick="editTransaction(' + transaction.id + ')">Ko\'rish</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Load reports
+        function loadReports() {
+            // Popular Books Chart
+            const ctx1 = document.getElementById('popularBooksChart').getContext('2d');
+            new Chart(ctx1, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Adabiyot', 'Ilm-fan', 'Texnika', 'Tarix'],
+                    datasets: [{
+                        data: [35, 25, 20, 20],
+                        backgroundColor: [
+                            '#667eea',
+                            '#764ba2',
+                            '#f093fb',
+                            '#4facfe'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Eng Mashhur Janrlar',
+                            font: {
+                                size: 18,
+                                weight: 'bold'
+                            }
+                        },
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Monthly Stats Chart
+            const ctx2 = document.getElementById('monthlyStatsChart').getContext('2d');
+            new Chart(ctx2, {
+                type: 'line',
+                data: {
+                    labels: ['Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'Iyun'],
+                    datasets: [{
+                        label: 'Berilgan kitoblar',
+                        data: [65, 78, 92, 81, 96, 105],
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }, {
+                        label: 'Qaytarilgan kitoblar',
+                        data: [45, 65, 70, 78, 82, 88],
+                        borderColor: '#28a745',
+                        backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Oylik Statistika',
+                            font: {
+                                size: 18,
+                                weight: 'bold'
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // Modal functions
+        function openAddBookModal() {
+            document.getElementById('addBookModal').style.display = 'block';
+        }
+
+        function openAddUserModal() {
+            document.getElementById('addUserModal').style.display = 'block';
+        }
+
+        function openTransactionModal() {
+            const modal = document.getElementById('transactionModal');
+            modal.style.display = 'block';
+            
+            // Populate user select
+            const userSelect = document.getElementById('transactionUser');
+            userSelect.innerHTML = '<option value="">Foydalanuvchini tanlang</option>';
+            users.forEach(user => {
+                userSelect.innerHTML += `<option value="${user.id}">${user.name}</option>`;
+            });
+            
+            // Populate book select
+            const bookSelect = document.getElementById('transactionBook');
+            bookSelect.innerHTML = '<option value="">Kitobni tanlang</option>';
+            books.forEach(book => {
+                if (book.status === 'available') {
+                    bookSelect.innerHTML += `<option value="${book.id}">${book.title}</option>`;
+                }
+            });
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Form submissions
+        document.getElementById('addBookForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const newBook = {
+                id: books.length + 1,
+                title: formData.get('bookTitle'),
+                author: formData.get('bookAuthor'),
+                genre: formData.get('bookGenre'),
+                year: parseInt(formData.get('bookYear')),
+                status: 'available',
+                issuedTo: null
+            };
+            books.push(newBook);
+            loadBooksData();
+            loadDashboardData();
+            closeModal('addBookModal');
+            e.target.reset();
+            showNotification('Kitob muvaffaqiyatli qo\'shildi!');
+        });
+
+        document.getElementById('addUserForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const newUser = {
+                id: users.length + 1,
+                name: formData.get('userName'),
+                email: formData.get('userEmail'),
+                type: formData.get('userType'),
+                booksRead: 0,
+                status: 'active'
+            };
+            users.push(newUser);
+            loadUsersData();
+            loadDashboardData();
+            closeModal('addUserModal');
+            e.target.reset();
+            showNotification('Foydalanuvchi muvaffaqiyatli qo\'shildi!');
+        });
+
+        document.getElementById('transactionForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const userId = parseInt(formData.get('transactionUser'));
+            const bookId = parseInt(formData.get('transactionBook'));
+            const type = formData.get('transactionType');
+            
+            if (type === 'issue') {
+                const book = books.find(b => b.id === bookId);
+                const user = users.find(u => u.id === userId);
+                
+                if (book && user) {
+                    book.status = 'issued';
+                    book.issuedTo = user.name;
+                    
+                    const newTransaction = {
+                        id: transactions.length + 1,
+                        userId: userId,
+                        bookId: bookId,
+                        userName: user.name,
+                        bookTitle: book.title,
+                        issueDate: new Date().toISOString().split('T')[0],
+                        dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                        status: 'issued'
+                    };
+                    transactions.push(newTransaction);
+                    
+                    showNotification('Kitob muvaffaqiyatli berildi!');
+                }
+            }
+            
+            loadBooksData();
+            loadTransactionsData();
+            loadDashboardData();
+            closeModal('transactionModal');
+            e.target.reset();
+        });
+
+        // Book actions
+        function issueBook(bookId) {
+            openTransactionModal();
+            document.getElementById('transactionBook').value = bookId;
+            document.getElementById('transactionType').value = 'issue';
+        }
+
+        function returnBook(bookId) {
+            const book = books.find(b => b.id === bookId);
+            if (book) {
+                book.status = 'available';
+                book.issuedTo = null;
+                
+                const transaction = transactions.find(t => t.bookId === bookId && t.status === 'issued');
+                if (transaction) {
+                    transaction.status = 'returned';
+                }
+                
+                loadBooksData();
+                loadTransactionsData();
+                loadDashboardData();
+                showNotification('Kitob muvaffaqiyatli qaytarildi!');
+            }
+        }
+
+        function editBook(bookId) {
+            showNotification('Tahrirlash funksiyasi demo versiyada mavjud emas.');
+        }
+
+        function deleteBook(bookId) {
+            if (confirm('Kitobni o\'chirmoqchimisiz?')) {
+                books = books.filter(b => b.id !== bookId);
+                loadBooksData();
+                loadDashboardData();
+                showNotification('Kitob o\'chirildi!');
+            }
+        }
+
+        // User actions
+        function editUser(userId) {
+            showNotification('Tahrirlash funksiyasi demo versiyada mavjud emas.');
+        }
+
+        function deleteUser(userId) {
+            if (confirm('Foydalanuvchini o\'chirmoqchimisiz?')) {
+                users = users.filter(u => u.id !== userId);
+                loadUsersData();
+                loadDashboardData();
+                showNotification('Foydalanuvchi o\'chirildi!');
+            }
+        }
+
+        // Transaction actions
+        function returnTransaction(transactionId) {
+            const transaction = transactions.find(t => t.id === transactionId);
+            if (transaction) {
+                const book = books.find(b => b.id === transaction.bookId);
+                if (book) {
+                    book.status = 'available';
+                    book.issuedTo = null;
+                    transaction.status = 'returned';
+                    
+                    loadBooksData();
+                    loadTransactionsData();
+                    loadDashboardData();
+                    showNotification('Kitob muvaffaqiyatli qaytarildi!');
+                }
+            }
+        }
+
+        function editTransaction(transactionId) {
+            showNotification('Ko\'rish funksiyasi demo versiyada mavjud emas.');
+        }
+
+        // Search and filter functionality
+        document.getElementById('bookSearch')?.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#booksTableBody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+
+        document.getElementById('userSearch')?.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#usersTableBody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+
+        document.getElementById('transactionSearch')?.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#transactionsTableBody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+
+        // Show notification
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notificationText');
+            
+            notificationText.textContent = message;
+            notification.style.background = type === 'success' ? '#28a745' : '#dc3545';
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+
+        // Initialize dashboard on load
+        window.onload = function() {
+            loadDashboardData();
+        }
+
+        // Mobile sidebar toggle (for future mobile support)
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('mobile-open');
+        }
+    </script>
+</body>
+</html>
